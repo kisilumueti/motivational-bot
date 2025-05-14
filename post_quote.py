@@ -1,7 +1,9 @@
 import os
+import time
 import openai
 import tweepy
 from datetime import datetime
+from openai.error import RateLimitError
 
 # Load API keys from environment variables
 openai_api_key = os.getenv("OPENAI_API_KEY")
@@ -21,7 +23,7 @@ client = openai.OpenAI(api_key=openai_api_key)
 auth = tweepy.OAuth1UserHandler(consumer_key, consumer_secret, access_token, access_token_secret)
 api = tweepy.API(auth)
 
-# Generate a motivational quote using chat model
+# Generate a motivational quote using OpenAI with retry on RateLimitError
 def generate_quote():
     prompt = (
         "Write a short, tweet-length, original motivational quote in a bold tone. "
@@ -29,26 +31,40 @@ def generate_quote():
         "Target: Gen Z & Millennials in urban Africa. Include some slang or street wisdom."
     )
 
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "You are a motivational writer."},
-            {"role": "user", "content": prompt}
-        ],
-        max_tokens=60,
-        temperature=0.8
-    )
+    retry_count = 0
+    max_retries = 5
+    while retry_count < max_retries:
+        try:
+            response = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": "You are a motivational writer."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=60,
+                temperature=0.8
+            )
+            return response.choices[0].message.content.strip()
+        except RateLimitError:
+            retry_count += 1
+            wait_time = 2 ** retry_count
+            print(f"⚠️ Rate limit exceeded. Retrying in {wait_time} seconds...")
+            time.sleep(wait_time)
+        except Exception as e:
+            print(f"❌ Unexpected error while generating quote: {e}")
+            return "Stay strong. Better days are coming! #Motivation"
 
-    return response.choices[0].message.content.strip()
+    print("❌ Failed to generate quote after multiple retries.")
+    return "Keep going. You're closer than you think. #Motivation"
 
 # Post to Twitter
 def post_to_twitter():
     quote = generate_quote()
     try:
         api.update_status(quote)
-        print(f"[{datetime.now()}] Tweeted: {quote}")
+        print(f"[{datetime.now()}] ✅ Tweeted: {quote}")
     except Exception as e:
-        print("❌ Failed to post:", e)
+        print("❌ Failed to post to Twitter:", e)
 
 # Run the function
 post_to_twitter()
