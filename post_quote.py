@@ -22,15 +22,16 @@ def generate_quote():
         "Target: Gen Z & Millennials in urban Africa. Include some slang or street wisdom."
     )
 
-    # Updated OpenAI API call
-    response = openai.Completion.create(
-        model="text-davinci-003",  # Or another model like gpt-3.5-turbo
-        prompt=prompt,
+    # Correct method for OpenAI v1.x (chat-based completion)
+    client = openai.OpenAI()
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}],
         max_tokens=60,
         temperature=0.8
     )
     
-    return response.choices[0].text.strip()
+    return response.choices[0].message.content.strip()
 
 # Post to Twitter
 def post_to_twitter():
