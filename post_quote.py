@@ -14,20 +14,25 @@ access_token_secret = os.getenv("TWITTER_ACCESS_SECRET")
 auth = tweepy.OAuth1UserHandler(consumer_key, consumer_secret, access_token, access_token_secret)
 api = tweepy.API(auth)
 
+# Generate a motivational quote
 def generate_quote():
     prompt = (
         "Write a short, tweet-length, original motivational quote in a bold tone. "
         "Themes: self-worth, glow-up, silence, money moves, Kenyan hustle, purpose. "
         "Target: Gen Z & Millennials in urban Africa. Include some slang or street wisdom."
     )
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=[{"role": "user", "content": prompt}],
+
+    # Updated OpenAI API call
+    response = openai.Completion.create(
+        model="text-davinci-003",  # Or another model like gpt-3.5-turbo
+        prompt=prompt,
         max_tokens=60,
         temperature=0.8
     )
-    return response['choices'][0]['message']['content'].strip()
+    
+    return response.choices[0].text.strip()
 
+# Post to Twitter
 def post_to_twitter():
     quote = generate_quote()
     try:
@@ -36,5 +41,6 @@ def post_to_twitter():
     except Exception as e:
         print("Failed to post:", e)
 
-# Run
+# Run the function
 post_to_twitter()
+
