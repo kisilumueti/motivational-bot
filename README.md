@@ -3,7 +3,7 @@
 Welcome to the **Motivational Quote Bot**! This simple yet powerful bot generates daily motivational quotes using **OpenAI's GPT-3** and posts them to **Twitter**. It's the perfect way to keep your Twitter feed filled with positive vibes and hustle energy. Let's get inspired, one tweet at a time! 💪
 
 > 👤 Built with 💻 and ☕ by a BBIT student passionate about tech & motivation.  
-> 📬 Contact: [@yjohnboscomueti](https://twitter.com/johnboscomueti) | Email: muetijohnbosco35@gmail.com
+> 📬 Contact: [@johnboscomueti](https://twitter.com/johnboscomueti) | Email: muetijohnbosco35@gmail.com
 
 ---
 
