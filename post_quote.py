@@ -10,6 +10,10 @@ consumer_secret = os.getenv("TWITTER_CONSUMER_SECRET")
 access_token = os.getenv("TWITTER_ACCESS_TOKEN")
 access_token_secret = os.getenv("TWITTER_ACCESS_SECRET")
 
+# Validate OpenAI API key
+if not openai_api_key:
+    raise ValueError("❌ OPENAI_API_KEY not found in environment variables.")
+
 # Initialize OpenAI client
 client = openai.OpenAI(api_key=openai_api_key)
 
@@ -44,8 +48,7 @@ def post_to_twitter():
         api.update_status(quote)
         print(f"[{datetime.now()}] Tweeted: {quote}")
     except Exception as e:
-        print("Failed to post:", e)
+        print("❌ Failed to post:", e)
 
 # Run the function
 post_to_twitter()
-
